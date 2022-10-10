@@ -7,6 +7,8 @@ import altair as alt
 #title
 st.title("Lets try out grain processing")
 
+date = st.date_input("Pick a date")
+
 number = st.slider("Pick a number",0,100)
 
 import pandas as pd
