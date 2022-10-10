@@ -22,6 +22,10 @@ c = alt.Chart(df).mark_circle().encode(
 
 st.altair_chart(c, use_container_width=True)
 
+genre = st.radio(
+    "What's your favorite stock",
+    ('google', 'apple', 'tcs'))
+
 #image uploader
 image = st.file_uploader(label = "Upload your image here",type=['png','jpg','jpeg'])
 
