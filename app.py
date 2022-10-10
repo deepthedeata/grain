@@ -6,6 +6,8 @@ import numpy as np #Image Processing
 #title
 st.title("Lets try out grain processing")
 
+number = st.slider("Pick a number",0,100)
+
 
 #image uploader
 image = st.file_uploader(label = "Upload your image here",type=['png','jpg','jpeg'])
