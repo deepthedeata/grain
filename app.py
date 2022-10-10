@@ -8,9 +8,6 @@ from datetime import datetime
 
 import streamlit as st
 
-
-from utils import chart, db
-
 #title
 st.title("Lets try out grain processing")
 
