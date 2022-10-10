@@ -4,7 +4,7 @@ from PIL import Image #Image Processing
 import numpy as np #Image Processing 
 
 #title
-st.title("Lets tryout grain processing")
+st.title("Lets try out grain processing")
 
 
 #image uploader
