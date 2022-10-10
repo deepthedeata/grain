@@ -3,6 +3,7 @@ import streamlit as st  #Web App
 from PIL import Image #Image Processing
 import numpy as np #Image Processing 
 import altair as alt
+import vega_datasets
 from datetime import datetime
 
 import streamlit as st
