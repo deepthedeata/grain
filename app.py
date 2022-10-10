@@ -2,13 +2,25 @@ import easyocr as ocr  #OCR
 import streamlit as st  #Web App
 from PIL import Image #Image Processing
 import numpy as np #Image Processing 
+import altair as alt
 
 #title
 st.title("Lets try out grain processing")
 
 number = st.slider("Pick a number",0,100)
 
-st.altair_chart([1,2,3,4])
+import pandas as pd
+import numpy as np
+
+
+df = pd.DataFrame(
+    np.random.randn(200, 3),
+    columns=['a', 'b', 'c'])
+
+c = alt.Chart(df).mark_circle().encode(
+    x='a', y='b', size='c', color='c', tooltip=['a', 'b', 'c'])
+
+st.altair_chart(c, use_container_width=True)
 
 #image uploader
 image = st.file_uploader(label = "Upload your image here",type=['png','jpg','jpeg'])
