@@ -8,7 +8,7 @@ st.title("Lets try out grain processing")
 
 number = st.slider("Pick a number",0,100)
 
-st.altair_chart(my_chart)
+st.altair_chart([1,2,3,4])
 
 #image uploader
 image = st.file_uploader(label = "Upload your image here",type=['png','jpg','jpeg'])
