@@ -3,7 +3,7 @@ import streamlit as st  #Web App
 from PIL import Image #Image Processing
 import numpy as np #Image Processing 
 import altair as alt
-import vega_datasets
+
 from datetime import datetime
 
 import streamlit as st
@@ -41,28 +41,6 @@ def space(num_lines=1):
         st.write("")
 
 
-st.set_page_config(layout="centered", page_icon="💬", page_title="Commenting app")
-
-# Data visualisation part
-
-st.title("💬 Commenting app")
-
-source = data.stocks()
-all_symbols = source.symbol.unique()
-symbols = st.multiselect("Choose stocks to visualize", all_symbols, all_symbols[:3])
-
-space(1)
-
-source = source[source.symbol.isin(symbols)]
-chart = chart.get_chart(source)
-st.altair_chart(chart, use_container_width=True)
-
-space(2)
-
-# Comments part
-
-conn = db.connect()
-comments = db.collect(conn)
 
 #image uploader
 image = st.file_uploader(label = "Upload your image here",type=['png','jpg','jpeg'])
