@@ -1,125 +1,46 @@
-import os
-import uuid
-import flask
-import urllib
-from PIL import Image
-from tensorflow.keras.models import load_model
-from flask import Flask , render_template  , request , send_file
-from tensorflow.keras.preprocessing.image import load_img , img_to_array
+import easyocr as ocr  #OCR
+import streamlit as st  #Web App
+from PIL import Image #Image Processing
+import numpy as np #Image Processing 
 
-app = Flask(__name__)
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-model = load_model(os.path.join(BASE_DIR , 'model.sav'))
+#title
+st.title("Easy OCR - Extract Text from Images")
 
+#subtitle
+st.markdown("## Optical Character Recognition - Using `easyocr`, `streamlit` -  hosted on 🤗 Spaces")
 
-ALLOWED_EXT = set(['jpg' , 'jpeg' , 'png' , 'jfif'])
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXT
+st.markdown("Link to the app - [image-to-text-app on 🤗 Spaces](https://huggingface.co/spaces/Amrrs/image-to-text-app)")
 
-classes = ['full' , 'brown', 'chalky' , 'broken', 'immature' ]
+#image uploader
+image = st.file_uploader(label = "Upload your image here",type=['png','jpg','jpeg'])
 
 
-def predict(filename , model):
-    img = load_img(filename , target_size = (32 , 32))
-    img = img_to_array(img)
-    img = img.reshape(1 , 32 ,32 ,3)
+@st.cache
+def load_model(): 
+    reader = ocr.Reader(['en'],model_storage_directory='.')
+    return reader 
 
-    img = img.astype('float32')
-    img = img/255.0
-    result = model.predict(img)
+reader = load_model() #load model
 
-    dict_result = {}
-    for i in range(5):
-        dict_result[result[0][i]] = classes[i]
+if image is not None:
 
-    res = result[0]
-    res.sort()
-    res = res[::-1]
-    prob = res[:3]
-     
-    prob_result = []
-    class_result = []
-    for i in range(3):
-        prob_result.append((prob[i]*100).round(2))
-        class_result.append(dict_result[prob[i]])
+    input_image = Image.open(image) #read image
+    st.image(input_image) #display image
 
-    return class_result , prob_result
+    with st.spinner("🤖 AI is at Work! "):
+        
+
+        result = reader.readtext(np.array(input_image))
+
+        result_text = [] #empty list for results
 
 
+        for text in result:
+            result_text.append(text[1])
 
-
-@app.route('/')
-def home():
-        return render_template("index.html")
-
-@app.route('/success' , methods = ['GET' , 'POST'])
-def success():
-    error = ''
-    target_img = os.path.join(os.getcwd() , 'static/images')
-    if request.method == 'POST':
-        if(request.form):
-            link = request.form.get('link')
-            try :
-                resource = urllib.request.urlopen(link)
-                unique_filename = str(uuid.uuid4())
-                filename = unique_filename+".jpg"
-                img_path = os.path.join(target_img , filename)
-                output = open(img_path , "wb")
-                output.write(resource.read())
-                output.close()
-                img = filename
-
-                class_result , prob_result = predict(img_path , model)
-
-                predictions = {
-                      "class1":class_result[0],
-                        "class2":class_result[1],
-                        "class3":class_result[2],
-                        "prob1": prob_result[0],
-                        "prob2": prob_result[1],
-                        "prob3": prob_result[2],
-                }
-
-            except Exception as e : 
-                print(str(e))
-                error = 'This image from this site is not accesible or inappropriate input'
-
-            if(len(error) == 0):
-                return  render_template('success.html' , img  = img , predictions = predictions)
-            else:
-                return render_template('index.html' , error = error) 
-
-            
-        elif (request.files):
-            file = request.files['file']
-            if file and allowed_file(file.filename):
-                file.save(os.path.join(target_img , file.filename))
-                img_path = os.path.join(target_img , file.filename)
-                img = file.filename
-
-                class_result , prob_result = predict(img_path , model)
-
-                predictions = {
-                      "class1":class_result[0],
-                        "class2":class_result[1],
-                        "class3":class_result[2],
-                        "prob1": prob_result[0],
-                        "prob2": prob_result[1],
-                        "prob3": prob_result[2],
-                }
-
-            else:
-                error = "Please upload images of jpg , jpeg and png extension only"
-
-            if(len(error) == 0):
-                return  render_template('success.html' , img  = img , predictions = predictions)
-            else:
-                return render_template('index.html' , error = error)
-
-    else:
-        return render_template('index.html')
-
-if __name__ == "__main__":
-    app.run(debug = True)
+        st.write(result_text)
+    #st.success("Here you go!")
+    st.balloons()
+else:
+    st.write("Upload an Image")
 #http://127.0.0.1:/5000
